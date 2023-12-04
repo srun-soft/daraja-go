@@ -2,7 +2,6 @@ package darajago
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io"
@@ -64,11 +63,7 @@ func (p *networkPackage) addHeader(key string, value string) {
 
 func newRequest(pac *networkPackage) (*networkResponse, *ErrorResponse) {
 	netResHolder := &networkResponse{}
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
+	client := &http.Client{}
 	var jsonDataBytes []byte
 	var httpReq *http.Request
 
