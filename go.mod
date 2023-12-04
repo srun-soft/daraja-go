@@ -2,10 +2,7 @@ module github.com/Eros-Vertigo/daraja-go
 
 go 1.19
 
-require (
-	github.com/gin-gonic/gin v1.9.1
-	github.com/oyamo/daraja-go v0.1.4
-)
+require github.com/gin-gonic/gin v1.9.1
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
