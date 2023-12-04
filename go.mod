@@ -1,4 +1,4 @@
-module github.com/yuantong/daraja-go
+module github.com/srun-soft/daraja-go
 
 go 1.19
 
