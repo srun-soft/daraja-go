@@ -1,4 +1,4 @@
-module github.com/Eros-Vertigo/daraja-go
+module github.com/yuantong/daraja-go
 
 go 1.19
 
