@@ -2,6 +2,7 @@ package darajago
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"net/http"
 )
 
@@ -21,11 +22,12 @@ func newAuthorization(consumerKey, consumerSecret string, env Environment) (*Aut
 	}
 
 	netPackage := newRequestPackage(nil, endpointAuth, http.MethodGet, authHeader, env)
-	authResponse, err := newRequest(netPackage)
+	res, err := newRequest(netPackage)
 	if err != nil {
 		return nil, err
 	}
-	if err := authResponse.Decode(&auth); err != nil {
+	defer res.Body.Close()
+	if err := json.NewDecoder(res.Body).Decode(&auth); err != nil {
 		return nil, err
 	}
 	return &auth, nil

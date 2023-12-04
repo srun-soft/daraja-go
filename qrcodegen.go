@@ -1,5 +1,7 @@
 package darajago
 
+import "encoding/json"
+
 type TransactionType string
 
 const (
@@ -65,7 +67,8 @@ func (d *DarajaApi) MakeQRCodeRequest(payload QRPayload) (*QRResponse, *ErrorRes
 		return nil, err
 	}
 	var res QRResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil

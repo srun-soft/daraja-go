@@ -5,6 +5,7 @@ package darajago
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"time"
 )
@@ -118,7 +119,8 @@ func (d *DarajaApi) MakeSTKPushRequest(mpesaConfig LipaNaMpesaPayload) (*LipaNaM
 		return nil, err
 	}
 	var res LipaNaMpesaResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
@@ -147,7 +149,8 @@ func (d *DarajaApi) QuerySTKPushStatus(mpesaConfig STKPushStatusPayload) (*STKPu
 		return nil, err
 	}
 	var res STKPushStatusResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil

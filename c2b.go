@@ -1,5 +1,7 @@
 package darajago
 
+import "encoding/json"
+
 // C2BPayload Simulate paying bills online
 type C2BPayload struct {
 	ShortCode     string `json:"ShortCode"`
@@ -49,7 +51,8 @@ func (d *DarajaApi) RegisterC2BCallback(payload C2BRegistrationPayload) (*C2BReg
 		return nil, err
 	}
 	var res C2BRegistrationResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
@@ -63,7 +66,8 @@ func (d *DarajaApi) MakeC2BPayment(c2b C2BPayload) (*C2BResponse, *ErrorResponse
 		return nil, err
 	}
 	var res C2BResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
@@ -77,7 +81,8 @@ func (d *DarajaApi) MakeC2BPaymentV2(c2b C2BPayload) (*C2BResponse, *ErrorRespon
 		return nil, err
 	}
 	var res C2BResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil

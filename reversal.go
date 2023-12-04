@@ -1,5 +1,7 @@
 package darajago
 
+import "encoding/json"
+
 type ReversalPayload struct {
 	Initiator              string `json:"Initiator"`
 	PassKey                string `json:"SecurityCredential"`
@@ -40,7 +42,8 @@ func (d *DarajaApi) ReverseTransaction(transation ReversalPayload, certPath stri
 		return nil, errRes
 	}
 	var res ReversalResponse
-	if err := secureResponse.Decode(&res); err != nil {
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
