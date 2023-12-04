@@ -1,5 +1,7 @@
 package darajago
 
+import "fmt"
+
 type ReversalPayload struct {
 	Initiator              string `json:"Initiator"`
 	PassKey                string `json:"SecurityCredential"`
@@ -35,9 +37,18 @@ func (d *DarajaApi) ReverseTransaction(transation ReversalPayload, certPath stri
 	}
 	transation.PassKey = encryptedCredential
 
-	secureResponse, errRes := performSecurePostRequest[*ReversalResponse](transation, endpointB2CPmtReq, d)
+	secureResponse, errRes := performSecurePostRequest(transation, endpointB2CPmtReq, d)
 	if errRes != nil {
 		return nil, errRes
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(ReversalResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 ReversalResponse
+		fmt.Println("ReversalResponse:", res)
+	}
+	return &res, nil
 }

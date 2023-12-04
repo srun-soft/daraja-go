@@ -1,5 +1,7 @@
 package darajago
 
+import "fmt"
+
 //B2C API is an API used to make payments from a Business to Customers (Pay Outs).
 //Also known as Bulk Disbursements. B2C API is used in several scenarios by
 //businesses that require to either make Salary Payments, Cashback payments,
@@ -96,9 +98,18 @@ func (d *DarajaApi) MakeB2CPayment(b2c B2CPayload, certPath string) (*B2CRespons
 	}
 	b2c.PassKey = encryptedCredential
 
-	secureResponse, errRes := performSecurePostRequest[*B2CResponse](b2c, endpointB2CPmtReq, d)
+	secureResponse, errRes := performSecurePostRequest(b2c, endpointB2CPmtReq, d)
 	if err != nil {
 		return nil, errRes
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(B2CResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 B2CResponse
+		fmt.Println("B2CResponse:", res)
+	}
+	return &res, nil
 }

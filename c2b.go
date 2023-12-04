@@ -1,5 +1,7 @@
 package darajago
 
+import "fmt"
+
 // C2BPayload Simulate paying bills online
 type C2BPayload struct {
 	ShortCode     string `json:"ShortCode"`
@@ -44,29 +46,56 @@ type C2BRegistrationResponse struct {
 }
 
 func (d *DarajaApi) RegisterC2BCallback(payload C2BRegistrationPayload) (*C2BRegistrationResponse, *ErrorResponse) {
-	secureResponse, err := performSecurePostRequest[*C2BRegistrationResponse](payload, endpointRegisterConfirmValidation, d)
+	secureResponse, err := performSecurePostRequest(payload, endpointRegisterConfirmValidation, d)
 	if err != nil {
 		return nil, err
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(C2BRegistrationResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 C2BRegistrationResponse
+		fmt.Println("C2BRegistrationResponse:", res)
+	}
+	return &res, nil
 }
 
 func (d *DarajaApi) MakeC2BPayment(c2b C2BPayload) (*C2BResponse, *ErrorResponse) {
 	c2b.CommandID = "CustomerPayBillOnline"
 	// marshal the struct into a map
-	secureResponse, err := performSecurePostRequest[*C2BResponse](c2b, endpointSimulatePmtC2B, d)
+	secureResponse, err := performSecurePostRequest(c2b, endpointSimulatePmtC2B, d)
 	if err != nil {
 		return nil, err
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(C2BResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 C2BResponse
+		fmt.Println("C2BResponse:", res)
+	}
+	return &res, nil
 }
 
 func (d *DarajaApi) MakeC2BPaymentV2(c2b C2BPayload) (*C2BResponse, *ErrorResponse) {
 	c2b.CommandID = "CustomerPayBillOnline"
 	// marshal the struct into a map
-	secureResponse, err := performSecurePostRequest[*C2BResponse](c2b, endpointSimulatePmtC2BV2, d)
+	secureResponse, err := performSecurePostRequest(c2b, endpointSimulatePmtC2BV2, d)
 	if err != nil {
 		return nil, err
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(C2BResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 C2BResponse
+		fmt.Println("C2BResponse:", res)
+	}
+	return &res, nil
 }

@@ -1,5 +1,7 @@
 package darajago
 
+import "fmt"
+
 // The Business to Business (B2B) API is used to transfer money from one business to another business.
 //This API enables the business to pay other businesses.
 
@@ -53,9 +55,18 @@ func (d *DarajaApi) MakeB2BPayment(b2c B2BPayload, certPath string) (*B2CRespons
 	}
 	b2c.PassKey = encryptedCredential
 
-	secureResponse, errRes := performSecurePostRequest[*B2CResponse](b2c, endpointB2CPmtReq, d)
+	secureResponse, errRes := performSecurePostRequest(b2c, endpointB2CPmtReq, d)
 	if err != nil {
 		return nil, errRes
 	}
-	return secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(B2CResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 B2CResponse
+		fmt.Println("B2CResponse:", res)
+	}
+	return &res, nil
 }

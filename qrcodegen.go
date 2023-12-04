@@ -1,5 +1,7 @@
 package darajago
 
+import "fmt"
+
 type TransactionType string
 
 const (
@@ -60,9 +62,18 @@ type QRResponse struct {
 // and returns a QRResponse struct representing the response from the QR code generation API,
 // or an ErrorResponse struct representing an error that occurred during the request.
 func (d *DarajaApi) MakeQRCodeRequest(payload QRPayload) (*QRResponse, *ErrorResponse) {
-	secureResponse, err := performSecurePostRequest[QRResponse](payload, endpointQrCode, d)
+	secureResponse, err := performSecurePostRequest(payload, endpointQrCode, d)
 	if err != nil {
 		return nil, err
 	}
-	return &secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(QRResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 QRResponse
+		fmt.Println("QRResponse:", res)
+	}
+	return &res, nil
 }

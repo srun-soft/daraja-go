@@ -5,6 +5,7 @@ package darajago
 
 import (
 	"encoding/base64"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -114,11 +115,20 @@ func (d *DarajaApi) MakeSTKPushRequest(mpesaConfig LipaNaMpesaPayload) (*LipaNaM
 	mpesaConfig.Timestamp = timestamp
 	mpesaConfig.Password = password
 
-	secureResponse, err := performSecurePostRequest[LipaNaMpesaResponse](mpesaConfig, endpointLipaNaMpesa, d)
+	secureResponse, err := performSecurePostRequest(mpesaConfig, endpointLipaNaMpesa, d)
 	if err != nil {
 		return nil, err
 	}
-	return &secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(LipaNaMpesaResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 LipaNaMpesaResponse
+		fmt.Println("LipaNaMpesaResponse:", res)
+	}
+	return &res, nil
 }
 
 // QuerySTKPushStatus is a function that queries the status of a Lipa Na Mpesa Online payment.
@@ -139,11 +149,20 @@ func (d *DarajaApi) QuerySTKPushStatus(mpesaConfig STKPushStatusPayload) (*STKPu
 	mpesaConfig.Timestamp = timestamp
 	mpesaConfig.Password = password
 
-	secureResponse, err := performSecurePostRequest[STKPushStatusResponse](mpesaConfig, endpointQueryLipanaMpesa, d)
+	secureResponse, err := performSecurePostRequest(mpesaConfig, endpointQueryLipanaMpesa, d)
 	if err != nil {
 		return nil, err
 	}
-	return &secureResponse.Body, nil
+	// 处理成功的情况，通过类型断言获取具体的 Body
+	res, ok := secureResponse.Body.(STKPushStatusResponse)
+	if !ok {
+		// 类型断言失败，处理错误
+		fmt.Println("Error: Unable to assert type")
+	} else {
+		// 成功获取 STKPushStatusResponse
+		fmt.Println("STKPushStatusResponse:", res)
+	}
+	return &res, nil
 }
 
 // MapExpressGinCallBack Register a callback for listening to MPESA requests
