@@ -5,8 +5,6 @@ package darajago
 
 import (
 	"encoding/base64"
-	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 )
@@ -119,14 +117,9 @@ func (d *DarajaApi) MakeSTKPushRequest(mpesaConfig LipaNaMpesaPayload) (*LipaNaM
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(LipaNaMpesaResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 LipaNaMpesaResponse
-		fmt.Println("LipaNaMpesaResponse:", res)
+	var res LipaNaMpesaResponse
+	if err := secureResponse.Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }
@@ -153,27 +146,22 @@ func (d *DarajaApi) QuerySTKPushStatus(mpesaConfig STKPushStatusPayload) (*STKPu
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(STKPushStatusResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 STKPushStatusResponse
-		fmt.Println("STKPushStatusResponse:", res)
+	var res STKPushStatusResponse
+	if err := secureResponse.Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }
 
 // MapExpressGinCallBack Register a callback for listening to MPESA requests
-func MapExpressGinCallBack(gingroup *gin.RouterGroup, callBackUrl string, callback ExpressCallBackFunc) {
-	gingroup.POST(callBackUrl, func(context *gin.Context) {
-		var callbackResponse CallbackResponse
-		err := context.BindJSON(&callbackResponse)
-		if err != nil {
-			callback(nil, nil, err)
-		}
-		callback(&callbackResponse, context.Request, nil)
-		context.JSON(http.StatusOK, map[string]string{"status": "payment processing"})
-	})
-}
+//func MapExpressGinCallBack(gingroup *gin.RouterGroup, callBackUrl string, callback ExpressCallBackFunc) {
+//	gingroup.POST(callBackUrl, func(context *gin.Context) {
+//		var callbackResponse CallbackResponse
+//		err := context.BindJSON(&callbackResponse)
+//		if err != nil {
+//			callback(nil, nil, err)
+//		}
+//		callback(&callbackResponse, context.Request, nil)
+//		context.JSON(http.StatusOK, map[string]string{"status": "payment processing"})
+//	})
+//}

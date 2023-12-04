@@ -1,7 +1,5 @@
 package darajago
 
-import "fmt"
-
 type TransactionType string
 
 const (
@@ -66,14 +64,9 @@ func (d *DarajaApi) MakeQRCodeRequest(payload QRPayload) (*QRResponse, *ErrorRes
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(QRResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 QRResponse
-		fmt.Println("QRResponse:", res)
+	var res QRResponse
+	if err := secureResponse.Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }
