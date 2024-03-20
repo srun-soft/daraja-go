@@ -8,7 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
-	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -19,7 +19,7 @@ func openSSlEncrypt(data, certPath string) (string, error) {
 		return "", err
 	}
 	defer certFile.Close()
-	certBytes, err := io.ReadAll(certFile)
+	certBytes, err := ioutil.ReadAll(certFile)
 	if err != nil {
 		return "", err
 	}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -97,7 +97,7 @@ func newRequest(pac *networkPackage) (*networkResponse, *ErrorResponse) {
 		if resp.Body != nil {
 			var errorResponse *ErrorResponse
 			// try to parse the error response
-			body, err := io.ReadAll(resp.Body)
+			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				return nil, &ErrorResponse{error: err}
 			}
