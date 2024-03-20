@@ -2,7 +2,7 @@ package darajago
 
 import (
 	"encoding/base64"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
@@ -16,24 +16,19 @@ type Authorization struct {
 }
 
 func newAuthorization(consumerKey, consumerSecret string, env Environment) (*Authorization, error) {
+	var auth Authorization
 	authHeader := map[string]string{
 		"Authorization": "Basic " + base64.StdEncoding.EncodeToString([]byte(consumerKey+":"+consumerSecret)),
 	}
 
 	netPackage := newRequestPackage(nil, endpointAuth, http.MethodGet, authHeader, env)
-	authResponse, err := newRequest(netPackage)
+	res, err := newRequest(netPackage)
 	if err != nil {
 		return nil, err
 	}
-
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := authResponse.Body.(Authorization)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 Authorization
-		fmt.Println("Authorization:", res)
+	defer res.Body.Close()
+	if err := json.NewDecoder(res.Body).Decode(&auth); err != nil {
+		return nil, err
 	}
-	return &res, nil
+	return &auth, nil
 }

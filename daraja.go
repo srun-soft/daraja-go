@@ -25,8 +25,6 @@ type darajaAAPIImpl interface {
 	Authorize() (*Authorization, error)
 	ReverseTransaction(transation ReversalPayload) (*ReversalResponse, *ErrorResponse)
 	MakeSTKPushRequest(mpesaConfig LipaNaMpesaPayload) (*LipaNaMpesaResponse, *ErrorResponse)
-	MakeB2BPayment(b2c B2CPayload) (*B2CResponse, *ErrorResponse)
-	MakeB2CPayment(b2c B2CPayload) (*B2CResponse, *ErrorResponse)
 	MakeQRCodeRequest(payload QRPayload) (*QRResponse, *ErrorResponse)
 	MakeC2BPayment(c2b C2BPayload) (*C2BResponse, *ErrorResponse)
 	MakeC2BPaymentV2(c2b C2BPayload) (*C2BResponse, *ErrorResponse)

@@ -1,6 +1,6 @@
 package darajago
 
-import "fmt"
+import "encoding/json"
 
 type ReversalPayload struct {
 	Initiator              string `json:"Initiator"`
@@ -41,14 +41,10 @@ func (d *DarajaApi) ReverseTransaction(transation ReversalPayload, certPath stri
 	if errRes != nil {
 		return nil, errRes
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(ReversalResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 ReversalResponse
-		fmt.Println("ReversalResponse:", res)
+	var res ReversalResponse
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }

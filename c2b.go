@@ -1,6 +1,6 @@
 package darajago
 
-import "fmt"
+import "encoding/json"
 
 // C2BPayload Simulate paying bills online
 type C2BPayload struct {
@@ -50,14 +50,10 @@ func (d *DarajaApi) RegisterC2BCallback(payload C2BRegistrationPayload) (*C2BReg
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(C2BRegistrationResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 C2BRegistrationResponse
-		fmt.Println("C2BRegistrationResponse:", res)
+	var res C2BRegistrationResponse
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }
@@ -69,14 +65,10 @@ func (d *DarajaApi) MakeC2BPayment(c2b C2BPayload) (*C2BResponse, *ErrorResponse
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(C2BResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 C2BResponse
-		fmt.Println("C2BResponse:", res)
+	var res C2BResponse
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }
@@ -88,14 +80,10 @@ func (d *DarajaApi) MakeC2BPaymentV2(c2b C2BPayload) (*C2BResponse, *ErrorRespon
 	if err != nil {
 		return nil, err
 	}
-	// 处理成功的情况，通过类型断言获取具体的 Body
-	res, ok := secureResponse.Body.(C2BResponse)
-	if !ok {
-		// 类型断言失败，处理错误
-		fmt.Println("Error: Unable to assert type")
-	} else {
-		// 成功获取 C2BResponse
-		fmt.Println("C2BResponse:", res)
+	var res C2BResponse
+	defer secureResponse.Body.Close()
+	if err := json.NewDecoder(secureResponse.Body).Decode(&res); err != nil {
+		return nil, &ErrorResponse{error: err}
 	}
 	return &res, nil
 }

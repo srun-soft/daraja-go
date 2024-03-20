@@ -61,7 +61,7 @@ func (p *networkPackage) addHeader(key string, value string) {
 	p.Headers[key] = value
 }
 
-func newRequest(pac *networkPackage) (*networkResponse, *ErrorResponse) {
+func newRequest(pac *networkPackage) (*http.Response, *ErrorResponse) {
 	netResHolder := &networkResponse{}
 	client := &http.Client{}
 	var jsonDataBytes []byte
@@ -87,8 +87,6 @@ func newRequest(pac *networkPackage) (*networkResponse, *ErrorResponse) {
 	if err != nil {
 		return nil, &ErrorResponse{error: err}
 	}
-
-	defer resp.Body.Close()
 
 	netResHolder.StatusCode = resp.StatusCode
 
@@ -124,14 +122,10 @@ func newRequest(pac *networkPackage) (*networkResponse, *ErrorResponse) {
 			return nil, &ErrorResponse{error: errors.New(resp.Status)}
 		}
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&netResHolder.Body); err != nil {
-		return nil, &ErrorResponse{error: err}
-	}
-
-	return netResHolder, nil
+	return resp, nil
 }
 
-func performSecurePostRequest(payload interface{}, endpoint string, d *DarajaApi) (*networkResponse, *ErrorResponse) {
+func performSecurePostRequest(payload interface{}, endpoint string, d *DarajaApi) (*http.Response, *ErrorResponse) {
 	var headers = make(map[string]string)
 
 	if d.authorization.AccessToken == "" {
@@ -152,10 +146,9 @@ func performSecurePostRequest(payload interface{}, endpoint string, d *DarajaApi
 
 	// bundle the request into a package
 	netPackage := newRequestPackage(payload, endpoint, http.MethodPost, headers, d.environment)
-	newResponse, err := newRequest(netPackage)
+	res, err := newRequest(netPackage)
 	if err != nil {
 		return nil, err
 	}
-
-	return newResponse, nil
+	return res, nil
 }
